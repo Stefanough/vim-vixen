@@ -36,18 +36,26 @@ export default class CompletionsInteractor {
   }
 
   async queryOpen(name, keywords) {
+    let settings = await this.settingRepository.get();
     let groups = [];
-    let engines = await this.querySearchEngineItems(name, keywords);
-    if (engines.length > 0) {
-      groups.push(new CompletionGroup('Search Engines', engines));
+
+    if (settings.properties.complete.includes('s')) {
+      let engines = await this.querySearchEngineItems(name, keywords);
+      if (engines.length > 0) {
+        groups.push(new CompletionGroup('Search Engines', engines));
+      }
     }
-    let histories = await this.queryHistoryItems(name, keywords);
-    if (histories.length > 0) {
-      groups.push(new CompletionGroup('History', histories));
+    if (settings.properties.complete.includes('h')) {
+      let histories = await this.queryHistoryItems(name, keywords);
+      if (histories.length > 0) {
+        groups.push(new CompletionGroup('History', histories));
+      }
     }
-    let bookmarks = await this.queryBookmarkItems(name, keywords);
-    if (bookmarks.length > 0) {
-      groups.push(new CompletionGroup('Bookmarks', bookmarks));
+    if (settings.properties.complete.includes('b')) {
+      let bookmarks = await this.queryBookmarkItems(name, keywords);
+      if (bookmarks.length > 0) {
+        groups.push(new CompletionGroup('Bookmarks', bookmarks));
+      }
     }
     return new Completions(groups);
   }
